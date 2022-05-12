@@ -7,7 +7,7 @@ on:
         type: choice
         description: 'target to compile'
         options:
-        - B70
+        - MI-4
       plugins:
         description: 'json format string of include configs'
         required: true
@@ -178,5 +178,5 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success'
       with:
-        name: Padavan44-packages
+        name: Padavan44-MI-4-packages
         path: ${{ env.FIRMWARE }}
