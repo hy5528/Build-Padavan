@@ -1,4 +1,4 @@
-name: Build MeIsReallyBy's Kernal4.4 Padavan
+name: Build B70 Padavan4.4
 
 on:
   workflow_dispatch:
