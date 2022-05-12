@@ -1,4 +1,4 @@
-# Padavan-build说明
+# Build-Padavan说明
 
 把trunk下的文件替换vb1980/Padavan-KVR源码中相应的文件，解决vb1980/Padavan-KVR源码编译出的固件7612无线无法联网问题，修改信号灯文件，B70工作正常。
 
