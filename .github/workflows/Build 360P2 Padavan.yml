@@ -6,7 +6,7 @@ on:
       firmwarever:
         description: 'firmware''s version'
         required: true
-        default: '20220511'
+        default: '20220512'
            
 env:
   REPOSITORY_URL: https://github.com/hy5528/Padavan-KVR.git
