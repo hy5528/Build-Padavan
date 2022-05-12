@@ -164,24 +164,24 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_ADBYBY=${{env.adbyby}}" >> .config #adbyby plus+
         #
         echo "CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME=${{env.adguardhome}}" >> .config #adguardhome
-        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=${{env.smartdns}}" >> .config #smartdns
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n{{env.smartdns}}" >> .config #smartdns
         #
-        echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=${{env.aliddns}}" >> .config #阿里DDNS
-        echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=${{env.zerotier}}" >> .config #zerotier ~1.3M
-        echo "CONFIG_FIRMWARE_INCLUDE_DDNSTO=${{env.ddnsto}}" >> .config #ddnsto
-        echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=${{env.wireguard}}" >> .config #wireguard
+        echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=n{{env.aliddns}}" >> .config #阿里DDNS
+        echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=n{{env.zerotier}}" >> .config #zerotier ~1.3M
+        echo "CONFIG_FIRMWARE_INCLUDE_DDNSTO=n{{env.ddnsto}}" >> .config #ddnsto
+        echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=n{{env.wireguard}}" >> .config #wireguard
         echo "CONFIG_FIRMWARE_INCLUDE_FRPS=n" >> .config #frp server
-        echo "CONFIG_FIRMWARE_INCLUDE_FRPC=${{env.frpc}}" >> .config #frp client
+        echo "CONFIG_FIRMWARE_INCLUDE_FRPC=n{{env.frpc}}" >> .config #frp client
         #
-        echo "CONFIG_FIRMWARE_INCLUDE_ALDRIVER=${{env.aldriver}}" >> .config #阿里云盘
+        echo "CONFIG_FIRMWARE_INCLUDE_ALDRIVER=n{{env.aldriver}}" >> .config #阿里云盘
         echo "CONFIG_FIRMWARE_INCLUDE_SQM=${{env.sqm}}" >> .config #QOS流控
         #
         #校园网相关开始
-        echo "CONFIG_FIRMWARE_INCLUDE_MENTOHUST=${{env.mentohust}}" >> .config #MENTOHUST
-        echo "CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=${{env.scutclient}}" >> .config #SCUTCLIENT
-        echo "CONFIG_FIRMWARE_INCLUDE_NJIT_CLIENT=${{env.njitclient}}" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_MINIEAP=${{env.minieap}}" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_DOGCOM=${{env.dogcom}}" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_MENTOHUST=n{{env.mentohust}}" >> .config #MENTOHUST
+        echo "CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=n{{env.scutclient}}" >> .config #SCUTCLIENT
+        echo "CONFIG_FIRMWARE_INCLUDE_NJIT_CLIENT=n{{env.njitclient}}" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_MINIEAP=n{{env.minieap}}" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_DOGCOM=n{{env.dogcom}}" >> .config
         #校园网相关结束
         #########################################################################################
         #自定义添加其它功能请参考源码configs/templates/目录下的config文件。按照上面的格式添加即可
