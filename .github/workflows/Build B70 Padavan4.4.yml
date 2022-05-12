@@ -16,10 +16,7 @@ on:
         description: 'firmware''s version'
         required: true
         default: '20220512'
-      uploadwet:
-        type: boolean
-        description: 'whether to upload firmware to wetransfer'
-        default: 'true'
+
 env:
   REPOSITORY_URL: https://github.com/MeIsReallyBa/padavan-4.4.git
   TOOLCHAIN_URL: https://github.com/hanwckf/padavan-toolchain/releases/download/linux-4.4-v1.0/mipsel-linux-uclibc.tar.xz
