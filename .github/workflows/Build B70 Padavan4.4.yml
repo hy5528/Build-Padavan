@@ -42,32 +42,6 @@ jobs:
         mkdir -p toolchain-4.4.x
         wget $TOOLCHAIN_URL
         tar -xf mipsel-linux-uclibc.tar.xz -C toolchain-4.4.x
-    - name: Parse json string of include plugins
-      run: |
-        echo "vpnsvr=${{fromJson(github.event.inputs.plugins).vpnsvr}}" >> $GITHUB_ENV
-        echo "vpncli=${{fromJson(github.event.inputs.plugins).vpncli}}" >> $GITHUB_ENV
-        echo "vpncmd=${{fromJson(github.event.inputs.plugins).vpncmd}}" >> $GITHUB_ENV
-        echo "ss=${{fromJson(github.event.inputs.plugins).ss}}" >> $GITHUB_ENV
-        echo "v2ray=${{fromJson(github.event.inputs.plugins).v2ray}}" >> $GITHUB_ENV
-        echo "xray=${{fromJson(github.event.inputs.plugins).xray}}" >> $GITHUB_ENV
-        echo "trojan=${{fromJson(github.event.inputs.plugins).trojan}}" >> $GITHUB_ENV
-        echo "ssobfs=${{fromJson(github.event.inputs.plugins).ssobfs}}" >> $GITHUB_ENV
-        echo "dnsforwarder=${{fromJson(github.event.inputs.plugins).dnsforwarder}}" >> $GITHUB_ENV
-        echo "adbyby=${{fromJson(github.event.inputs.plugins).adbyby}}" >> $GITHUB_ENV
-        echo "adguardhome=${{fromJson(github.event.inputs.plugins).adguardhome}}" >> $GITHUB_ENV
-        echo "smartdns=${{fromJson(github.event.inputs.plugins).smartdns}}" >> $GITHUB_ENV
-        echo "aliddns=${{fromJson(github.event.inputs.plugins).aliddns}}" >> $GITHUB_ENV
-        echo "zerotier=${{fromJson(github.event.inputs.plugins).zerotier}}" >> $GITHUB_ENV
-        echo "ddnsto=${{fromJson(github.event.inputs.plugins).ddnsto}}" >> $GITHUB_ENV
-        echo "wireguard=${{fromJson(github.event.inputs.plugins).wireguard}}" >> $GITHUB_ENV
-        echo "frpc=${{fromJson(github.event.inputs.plugins).frpc}}" >> $GITHUB_ENV
-        echo "aldriver=${{fromJson(github.event.inputs.plugins).aldriver}}" >> $GITHUB_ENV
-        echo "sqm=${{fromJson(github.event.inputs.plugins).sqm}}" >> $GITHUB_ENV
-        echo "mentohust=${{fromJson(github.event.inputs.plugins).mentohust}}" >> $GITHUB_ENV
-        echo "scutclient=${{fromJson(github.event.inputs.plugins).scutclient}}" >> $GITHUB_ENV
-        echo "njitclient=${{fromJson(github.event.inputs.plugins).njitclient}}" >> $GITHUB_ENV
-        echo "minieap=${{fromJson(github.event.inputs.plugins).minieap}}" >> $GITHUB_ENV
-        echo "dogcom=${{fromJson(github.event.inputs.plugins).dogcom}}" >> $GITHUB_ENV
     - name: Custom config
       run: |
         cd $WORK_PATH/trunk
