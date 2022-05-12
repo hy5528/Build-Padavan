@@ -42,43 +42,6 @@ jobs:
         mkdir -p toolchain-4.4.x
         wget $TOOLCHAIN_URL
         tar -xf mipsel-linux-uclibc.tar.xz -C toolchain-4.4.x
-    - name: Apply rainbow themes
-      if: github.event.inputs.rainbowui == 'true'
-      run: |
-        cp -f formlogin/httpd.c $WORK_PATH/trunk/user/httpd
-        cd $WORK_PATH/trunk/user/www
-        sed -i "s/WEBUI_NAME=n56u_ribbon_fixed/WEBUI_NAME=n56u_rainbow/g" ./Makefile
-    - name: Apply specialized logo
-      if: github.event.inputs.specializedlogo == 'true'
-      run: |
-        logoFile=
-        if [ "${{ github.event.inputs.target }}" = "BELL-A040WQ" ]; then
-        logoFile="a040wq/bell_asus_logo.png"
-        fi
-        if [ "${{ github.event.inputs.target }}" = "ZTE-E8820S" ]; then
-        logoFile="e8820s/zte_asus_logo.png"
-        fi
-        if [ -n "$logoFile" ]; then
-            cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_ribbon_fixed/bootstrap/img/asus_logo.png
-            if [ "${{ github.event.inputs.rainbowui }}" = "true" ]; then
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_blue.png
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_cyan.png
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_green.png
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_orange.png
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_purple.png
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_red.png
-                cp -f $logoFile $WORK_PATH/trunk/user/www/n56u_rainbow/bootstrap/img/logo_yellow.png
-            fi
-        fi
-    - name: Change specialized brand logo image
-      if: github.event.inputs.changebrandlogo == 'true'
-      run: |
-        cd $WORK_PATH/trunk
-        if [ "${{ github.event.inputs.rainbowui }}" = "true" ]; then
-            sudo ./change_logo.sh ${{ github.event.inputs.target }} 0
-        else
-            sudo ./change_logo.sh ${{ github.event.inputs.target }}
-        fi
     - name: Parse json string of include plugins
       run: |
         echo "vpnsvr=${{fromJson(github.event.inputs.plugins).vpnsvr}}" >> $GITHUB_ENV
