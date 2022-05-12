@@ -1,4 +1,4 @@
-name: Build B70 Padavan4.4
+name: Build MI-4 Padavan4.4
 
 on:
   workflow_dispatch:
