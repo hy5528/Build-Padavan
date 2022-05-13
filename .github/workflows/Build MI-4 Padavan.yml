@@ -22,23 +22,21 @@ env:
   UPLOAD_WETRANSFER: false
 jobs:
   build:
-    name: build
     runs-on: ubuntu-20.04
-    env:
-      build_variant: ${{ matrix.build_variant }}
-      targets: ${{ matrix.targets }}
-    strategy:
-      matrix:
-        include:
-          - build_variant: "mt7621"
-            targets: "MI-4"
+    if: github.event.repository.owner.id == github.event.sender.id
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Prepare environment
-        run: |
-          sudo apt update
-          sudo apt install libtool-bin gperf python3-docutils autopoint gettext zip
-          mkdir -p $images_dir
+    - name: Checkout
+      uses: actions/checkout@main
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot kmod \
+        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+        sudo timedatectl set-timezone "$TIME_ZONE"ba
       - name: Clone source
         run: |
           git clone --depth=1 $src_git $build_dir
