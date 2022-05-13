@@ -168,12 +168,12 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
     - name: Upload MI-4
-        id: upload-release-asset-MI-4
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /opt/images/MI-4.trx
-          asset_name: MI-4_${{ env.build_date }}_${{ env.build_version }}.trx
-          asset_content_type: application/bin
+      id: upload-release-asset-MI-4
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /opt/images/MI-4.trx
+        asset_name: MI-4_${{ env.build_date }}_${{ env.build_version }}.trx
+        asset_content_type: application/bin
