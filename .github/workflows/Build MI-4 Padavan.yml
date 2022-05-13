@@ -63,7 +63,7 @@ jobs:
 
       - name: Custom config
         run: |
-          cd $WORK_PATH/trunk
+          cd $build_dir/trunk/configs/templates
           if [ ! -f configs/templates/$TARGET_NAME.config ] ; then
           echo "configs/templates/${TARGET_NAME}.config not found"
           exit 1
