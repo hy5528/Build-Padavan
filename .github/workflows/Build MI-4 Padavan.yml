@@ -207,5 +207,5 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success'
       with:
-        name: Padavan-packages
+        name: Padavan-MI-4-packages
         path: ${{ env.FIRMWARE }}
