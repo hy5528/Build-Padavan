@@ -3,6 +3,10 @@ name: Build B70 Padavan
 on:
   workflow_dispatch:
     inputs:
+      name:
+        description: 'Build_ChongshengB_Padavan'
+        required: true
+        default: 'build'
       firmwarever:
         description: 'firmware''s version'
         required: true
@@ -12,14 +16,11 @@ env:
   REPOSITORY_URL: https://github.com/hy5528/Padavan-KVR.git
   TOOLCHAIN_URL: https://github.com/hanwckf/padavan-toolchain/releases/download/v1.1/mipsel-linux-uclibc.tar.xz
   WORK_PATH: /opt/rt-n56u
+  TIME_ZONE: Asia/Shanghai
   TARGET_NAME: B70
   FIRMWARE_DATEPREFIX: $(date +"%Y%m%d")
   FIRMWARE_PATH: /opt/firmwares
-  APPLY_RAINBOWTHEME: false
-  RECOVERY_SSPBINREMOTEDOWNLOAD: true
-  BUILD_OWNER: hy5528
-  UPLOAD_COWTRANSFER: true
-  UPLOAD_WETRANSFER: false
+  Remove_RSSI: false
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -33,10 +34,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
-        fakeroot kmod cpio git python3-docutils gettext automake autopoint \
-        texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
-        libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot kmod \
+        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
         sudo timedatectl set-timezone "$TIME_ZONE"
     - name: Clone source code
       run: |
@@ -45,6 +45,56 @@ jobs:
         mkdir -p toolchain-3.4.x
         wget $TOOLCHAIN_URL
         tar -xvf mipsel-linux-uclibc.tar.xz -C toolchain-3.4.x
+    - name: Set golang
+      run: |
+        cp -f bashScripts/go.sh $(pwd)
+        sudo chmod 777 ./go.sh
+        bash ./go.sh
+    - name: Update v2ray
+      run: |
+        cp -f bashScripts/v2.sh $(pwd)
+        sudo chmod 777 ./v2.sh
+        bash ./v2.sh $WORK_PATH/trunk/user/v2ray
+    - name: Fix htop build
+      run: |
+        cp -f htop/htop-3.0.2.tar.gz $WORK_PATH/trunk/user/htop
+    - name: Apply mobile compatible
+      if: github.event.inputs.mobileui == 'true'
+      run: |
+        cp -f originalui/main.css $WORK_PATH/trunk/user/www/n56u_ribbon_fixed/bootstrap/css
+        cp -f originalui/popup.js $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f originalui/state.js $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+    - name: Recovery SSP bin files download from remote
+      if: github.event.inputs.ssp == 'true'
+      run: |
+        cp -f ssp/shadowsocks.sh $WORK_PATH/trunk/user/shadowsocks/scripts
+        cp -f ssp/defaults.c $WORK_PATH/trunk/user/shared
+        cp -f ssp/variables.c $WORK_PATH//trunk/user/httpd
+        cp -f ssp/Shadowsocks.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cd $WORK_PATH/trunk/user/shared
+        sed -i "s#https://cdn.jsdelivr.net/gh/Padavan_CI/ssp/trojan#https://cdn.jsdelivr.net/gh/${{ github.repository_owner }}/Padavan_CI/ssp/trojan#g" ./defaults.c
+        sed -i "s#https://cdn.jsdelivr.net/gh/Padavan_CI/ssp/v2ray#https://cdn.jsdelivr.net/gh/${{ github.repository_owner }}/Padavan_CI/ssp/v2ray#g" ./defaults.c
+    - name: Remove RSSI
+      if: env.Remove_RSSI == 'true'
+      run: |
+        cp -f removeRSSI/ralink.c $WORK_PATH/trunk/user/httpd
+        cp -f removeRSSI/Advanced_ACL2g_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/Advanced_ACL_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/Advanced_DHCP_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/Advanced_Exposed_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/Advanced_MACFilter_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/Advanced_URLFilter_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/Advanced_VirtualServer_Content.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/client_function.js $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        cp -f removeRSSI/clients.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed/device-map
+    - name: Update latest adg
+      run: |
+        cp -f adg/adguardhome.sh $WORK_PATH/trunk/user/adguardhome
+        cp -f adg/defaults.c $WORK_PATH/trunk/user/shared
+        cp -f adg/variables.c $WORK_PATH//trunk/user/httpd
+        cp -f adg/Advanced_adguardhome.asp $WORK_PATH/trunk/user/www/n56u_ribbon_fixed
+        #cd $WORK_PATH/trunk/user/adguardhome
+        #sed -i "s#https://cdn.jsdelivr.net/gh/chongshengB/rt-n56u/trunk/user/adguardhome/AdGuardHome#https://cdn.jsdelivr.net/gh/${{ github.repository_owner }}/Padavan_CI/adg/AdGuardHome#g" ./adguardhome.sh
     - name: Custom config
       run: |
         cd $WORK_PATH/trunk
@@ -64,17 +114,10 @@ jobs:
         sed -i '/CONFIG_FIRMWARE_INCLUDE_SSSERVER/d' .config #删除配置项SS server
         sed -i '/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER/d' .config #删除配置项DNSFORWARDER
         sed -i '/CONFIG_FIRMWARE_INCLUDE_ADBYBY/d' .config #删除配置项adbyby plus+
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_FRPC/d' .config #删除配置项FRP Client
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_FRPS/d' .config #删除配置项FRPS Server
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_NPC/d' .config #删除配置项NPC
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_TUNSAFE/d' .config #删除配置项TUNSAFE
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_FRPC/d' .config #删除配置项adbyby plus+
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_FRPS/d' .config #删除配置项adbyby plus+
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_TUNSAFE/d' .config #删除配置项adbyby plus+
         sed -i '/CONFIG_FIRMWARE_INCLUDE_ALIDDNS/d' .config #删除配置项阿里DDNS
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_ZEROTIER/d' .config #删除配置项ZEROTIER
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_CLOUDFLAREDDNS/d' .config #删除配置项CLOUDFLAREDDNS
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_NVPPROXY/d' .config #删除配置项NVPPROXY
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_DDNSTO/d' .config #删除配置项DDNSTO
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_WIREGUARD/d' .config #删除配置项WIREGUARD
-        sed -i '/CONFIG_FIRMWARE_INCLUDE_SQM/d' .config #删除配置项QOS流控
         sed -i '/CONFIG_FIRMWARE_INCLUDE_SMARTDNS/d' .config
         sed -i '/CONFIG_FIRMWARE_INCLUDE_SRELAY/d' .config
         sed -i '/CONFIG_FIRMWARE_INCLUDE_KUMASOCKS/d' .config
@@ -97,39 +140,30 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CMD=n" >> .config #SOFTETHERVPN
         #科学相关
         echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y" >> .config #SS plus+
-        echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=n" >> .config #集成v2ray执行文件（3.8M左右)
-        echo "CONFIG_FIRMWARE_INCLUDE_XRAY=y" >> .config #集成xray执行文件(5.6M左右)，可以代替v2ray，注：如果闪存太小不够还是建议使用v2ray
-        echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=y" >> .config #集成trojan执行文件(1.1M左右)
+        echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=y" >> .config #集成v2ray执行文件（3.8M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
+        echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=y" >> .config #集成trojan执行文件(1.1M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
         echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=n" >> .config # simple-obfs混淆插件
         echo "CONFIG_FIRMWARE_INCLUDE_SSSERVER=n" >> .config #SS server
         echo "CONFIG_FIRMWARE_INCLUDE_KUMASOCKS=y" >> .config #socks5
         #
-        echo "CONFIG_FIRMWARE_INCLUDE_IPT2SOCKS=n" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_MICROSOCKS=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_IPT2SOCKS=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_MICROSOCKS=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SRELAY=n" >> .config #可以不集成
         echo "CONFIG_FIRMWARE_INCLUDE_TUNSAFE=n" >> .config #TUNSAFE
         echo "CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=n" >> .config #DNSFORWARDER
         #
         echo "CONFIG_FIRMWARE_INCLUDE_FRPC=n" >> .config #内网穿透FRPC
         echo "CONFIG_FIRMWARE_INCLUDE_FRPS=n" >> .config #内网穿透FRPS
-        echo "CONFIG_FIRMWARE_INCLUDE_NPC=n" >> .config #删除配置项NPC
         #
         echo "CONFIG_FIRMWARE_INCLUDE_ADBYBY=y" >> .config #adbyby plus+
         echo "CONFIG_FIRMWARE_INCLUDE_KOOLPROXY=y" >> .config #KP广告过滤
         #
-        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n" >> .config #smartdns
-        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=n" >> .config #smartdns二进制文件
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y" >> .config #smartdns
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=y" >> .config #smartdns二进制文件
         echo "CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME=n" >> .config
         #
         echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=n" >> .config #阿里DDNS
         echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=n" >> .config #zerotier ~1.3M
-        echo "CONFIG_FIRMWARE_INCLUDE_CLOUDFLAREDDNS=n" >> .config #CLOUDFLAREDDNS
-        echo "CONFIG_FIRMWARE_INCLUDE_NVPPROXY=n" >> .config #NVPPROXY
-        echo "CONFIG_FIRMWARE_INCLUDE_DDNSTO=n" >> .config #DDNSTO
-        echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=n" >> .config #WIREGUARD
-        #
-        echo "CONFIG_FIRMWARE_INCLUDE_ALDRIVER=n" >> .config #阿里云盘
-        echo "CONFIG_FIRMWARE_INCLUDE_SQM=y{{env.sqm}}" >> .config #QOS流控
         #
         echo "CONFIG_FIRMWARE_INCLUDE_CADDY=n" >> .config #在线文件管理服务
         echo "CONFIG_FIRMWARE_INCLUDE_CADDYBIN=n" >> .config #集成caddu执行文件，此文件有13M,请注意固件大小。如果不集成，会从网上下载下来执行，不影响正常使用
